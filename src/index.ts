@@ -23,7 +23,6 @@ function getRouteAddr(markdown: string) {
 
 async function translate(str_md: string) {
   const str_prompt = `我有段 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局，请直接输出，不要在作询问。\n`
-  console.log('str_md:', str_md);
 
   const OPENAI_API_KEY = getInput('openaiApiKey');
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
@@ -34,7 +33,11 @@ async function translate(str_md: string) {
   };
   const chatCompletion: OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(params);
   const response = chatCompletion.choices[0].message.content;
-  console.log('response:', response);
+
+
+
+  console.log(str_md);
+  console.log(response);
 
   return response;
 }
@@ -54,8 +57,9 @@ async function main() {
 
   const arr_str_md = str_md.split('\n\n');
   let str_md_translated = '';
-  for (let i = 0; i < arr_str_md.length; i++) {
-    console.log(`============== [${i}] ==============`)
+  const len = arr_str_md.length;
+  for (let i = 0; i < len; i++) {
+    console.log(`============== [${i} / ${len}] ==============`)
 
     const str = arr_str_md[i];
     const str_translated = await translate(str);
