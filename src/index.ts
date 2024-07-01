@@ -64,7 +64,7 @@ async function main() {
     console.log(`============== [${i} / ${len}] ==============`)
 
     const str = arr_str_md[i];
-    if (str.length < MAX_LENGTH && str_temp.length + str.length < MAX_LENGTH) {
+    if (str.length < MAX_LENGTH) {
       str_temp += str + '\n\n';
       continue;
     }
