@@ -2,7 +2,7 @@ import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 
-const translate = require('google-translate-api');
+import {translateWithOpenAI} from 'openai-translate';
 
 async function main() {
   // 打印仓库信息，包括仓库名、分支名、提交ID
@@ -18,15 +18,18 @@ async function main() {
       console.log(file.filename);
     });
   }
-  translate('Ik spreek Engels', {to: 'zh-cn'}).then((res:any) => {
-    console.log(res.text);
-    //=> I speak English
-    console.log(res.from.language.iso);
-    //=> nl
-}).catch((err:any) => {
-    console.error(err);
-});
 
+  const OPENAI_API_KEY = getInput('openaiApiKey');
+  const message = 'hello world';
+  const openai_url = 'https://api.openai.com/v1/engines/davinci/completions';
+  const model = 'gpt-3.5-turbo';
+  const target_langualge = 'zh-cn';
+
+  console.log('OPENAI_API_KEY:', OPENAI_API_KEY);
+
+  const result = await translateWithOpenAI(OPENAI_API_KEY, openai_url, model, message, target_langualge);
+  
+  console.log('result:', result);
 }
 
 main()

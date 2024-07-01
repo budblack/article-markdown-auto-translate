@@ -27,6 +27,7 @@
     "google-translate-api": "^2.3.0",
     "linkedom": "^0.18.3",
     "marked": "^13.0.1",
+    "openai-translate": "^1.0.13",
     "translate-google": "^1.5.0",
     "turndown": "^7.2.0",
     "turndown-plugin-gfm": "^1.0.2",
