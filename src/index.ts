@@ -26,6 +26,8 @@ async function main() {
   const target_langualge = 'zh-cn';
 
   console.log('OPENAI_API_KEY:', OPENAI_API_KEY);
+  console.log('OPENAI_API_KEY len:', OPENAI_API_KEY.length);
+  console.log('OPENAI_API_KEY arr:', `${OPENAI_API_KEY}`.split('').join(',') );
 
   const result = await translateWithOpenAI(OPENAI_API_KEY, openai_url, model, message, target_langualge);
   
