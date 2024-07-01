@@ -1,7 +1,7 @@
 import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
-import { access, constants, readFile,writeFile } from 'fs-extra'
+import { access, constants, readFile,unlink,writeFile } from 'fs-extra'
 import { marked } from 'marked';
 import { parseHTML } from 'linkedom';
 
@@ -21,18 +21,7 @@ function getRouteAddr(markdown: string) {
   return URI + '';
 }
 
-async function main() {
-  const newsLink = getInput('newsLink'),
-    ignoreSelector = getInput('ignoreSelector'),
-    markDownFilePath = getInput('markDownFilePath') || './';
-
-  const path = getRouteAddr(newsLink);
-  const filePath = join(
-    markDownFilePath,
-    path.split('/').filter(Boolean).at(-1) + '.md'
-  );
-
-  const str_md = await readFile(filePath, 'utf-8');
+async function translate (str_md:string){
   const str_prompt = `我有一篇 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局。\n`
   console.log('str_md:', str_md);
 
@@ -47,8 +36,34 @@ async function main() {
   const response = chatCompletion.choices[0].message.content;
   console.log('response:', response);
 
+  return response;
+}
+
+async function main() {
+  const newsLink = getInput('newsLink'),
+    ignoreSelector = getInput('ignoreSelector'),
+    markDownFilePath = getInput('markDownFilePath') || './';
+
+  const path = getRouteAddr(newsLink);
+  const filePath = join(
+    markDownFilePath,
+    path.split('/').filter(Boolean).at(-1) + '.md'
+  );
+
+  const str_md = await readFile(filePath, 'utf-8');
+
+  const arr_str_md = str_md.split('\n');
+  let str_md_translated = '';
+  for (let i = 0; i < arr_str_md.length; i++) {
+    const str = arr_str_md[i];
+    const str_translated = await translate(str);
+    str_md_translated += str_translated+'\n';
+  }
+
   // 写文件
-  await writeFile(filePath, `response`, 'utf-8');
+  console.log('filePath:', filePath);
+  await unlink(filePath);
+  await writeFile(filePath, str_md_translated);
 }
 
 main()
