@@ -1,7 +1,7 @@
 import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
-import { access, constants, readFile,unlink,writeFile } from 'fs-extra'
+import { access, constants, readFile, unlink, writeFile } from 'fs-extra'
 import { marked } from 'marked';
 import { parseHTML } from 'linkedom';
 
@@ -21,8 +21,8 @@ function getRouteAddr(markdown: string) {
   return URI + '';
 }
 
-async function translate (str_md:string){
-  const str_prompt = `我有一篇 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局。\n`
+async function translate(str_md: string) {
+  const str_prompt = `我有段 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局，请直接输出，不要在作询问。\n`
   console.log('str_md:', str_md);
 
   const OPENAI_API_KEY = getInput('openaiApiKey');
@@ -52,12 +52,16 @@ async function main() {
 
   const str_md = await readFile(filePath, 'utf-8');
 
-  const arr_str_md = str_md.split('\n');
+  const arr_str_md = str_md.split('\n\n');
   let str_md_translated = '';
   for (let i = 0; i < arr_str_md.length; i++) {
+    console.log(`============== [${i}] ==============`)
+
     const str = arr_str_md[i];
     const str_translated = await translate(str);
-    str_md_translated += str_translated+'\n';
+    str_md_translated += str_translated + '\n\n';
+
+    console.log('\n')
   }
 
   // 写文件
