@@ -2,7 +2,7 @@ import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 
-import {translateWithOpenAI} from 'openai-translate';
+import { translateWithOpenAI } from 'openai-translate';
 
 async function main() {
   // 打印仓库信息，包括仓库名、分支名、提交ID
@@ -21,17 +21,20 @@ async function main() {
 
   const OPENAI_API_KEY = getInput('openaiApiKey');
   const message = 'hello world';
-  const openai_url = 'https://api.openai.com/v1/engines/davinci/completions';
+  const openai_url = 'https://api.openai.com/v1/chat/completions';
   const model = 'gpt-3.5-turbo';
   const target_langualge = 'zh-cn';
 
-  console.log('OPENAI_API_KEY:', OPENAI_API_KEY);
+  // console.log('OPENAI_API_KEY:', OPENAI_API_KEY);
   console.log('OPENAI_API_KEY len:', OPENAI_API_KEY.length);
-  console.log('OPENAI_API_KEY arr:', `${OPENAI_API_KEY}`.split('').join(',') );
+  // console.log('OPENAI_API_KEY arr:', `${OPENAI_API_KEY}`.split('').join(',') );
 
-  const result = await translateWithOpenAI(OPENAI_API_KEY, openai_url, model, message, target_langualge);
-  
-  console.log('result:', result);
+  try {
+    const result = await translateWithOpenAI(OPENAI_API_KEY, openai_url, model, message, target_langualge);
+    console.log('result:', result);
+  } catch (error) {
+    console.error('error:', error);
+  }
 }
 
 main()
