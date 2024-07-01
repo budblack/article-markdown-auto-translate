@@ -1,7 +1,7 @@
 import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
-import { access, constants, readFile } from 'fs-extra'
+import { access, constants, readFile,writeFile } from 'fs-extra'
 import { marked } from 'marked';
 import { parseHTML } from 'linkedom';
 
@@ -46,6 +46,9 @@ async function main() {
   const chatCompletion: OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(params);
   const response = chatCompletion.choices[0].message.content;
   console.log('response:', response);
+
+  // 写文件
+  await writeFile(filePath, `response`, 'utf-8');
 }
 
 main()
