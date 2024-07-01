@@ -1,7 +1,8 @@
 import { getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
-import translate from 'translate-google'
+
+const translate = require('google-translate-api');
 
 async function main() {
   // 打印仓库信息，包括仓库名、分支名、提交ID
@@ -17,19 +18,14 @@ async function main() {
       console.log(file.filename);
     });
   }
-
-  const tranObj = {
-    a: 1,
-    b: '1',
-    c: "How are you?\nI'm nice.",
-    d: [true, 'true', 'hi', { a: 'hello', b: ['world'] }],
-  }
-
-  translate(tranObj, { to: 'zh-cn', except: ['a'] }).then((res: any) => {
-    console.log(res)
-  }).catch((error: any) => {
-    console.error(error)
-  })
+  translate('Ik spreek Engels', {to: 'zh-cn'}).then((res:any) => {
+    console.log(res.text);
+    //=> I speak English
+    console.log(res.from.language.iso);
+    //=> nl
+}).catch((err:any) => {
+    console.error(err);
+});
 
 }
 
