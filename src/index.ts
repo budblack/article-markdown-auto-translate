@@ -33,14 +33,15 @@ async function main() {
   );
 
   const str_md = await readFile(filePath, 'utf-8');
-  const str_prompt = `请将下文翻译为中文，并保留完整排版。\n`
+  const str_prompt = `我有一篇 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局。\n`
+  console.log('str_md:', str_md);
 
   const OPENAI_API_KEY = getInput('openaiApiKey');
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
   const params: OpenAI.Chat.ChatCompletionCreateParams = {
     messages: [{ role: 'user', content: str_prompt + str_md }],
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o',
   };
   const chatCompletion: OpenAI.Chat.ChatCompletion = await openai.chat.completions.create(params);
   const response = chatCompletion.choices[0].message.content;
