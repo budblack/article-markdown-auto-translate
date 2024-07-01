@@ -58,13 +58,20 @@ async function main() {
   const arr_str_md = str_md.split('\n\n');
   let str_md_translated = '';
   const len = arr_str_md.length;
+  let str_temp = '';
+  const MAX_LENGTH = 1024;
   for (let i = 0; i < len; i++) {
     console.log(`============== [${i} / ${len}] ==============`)
 
     const str = arr_str_md[i];
-    const str_translated = await translate(str);
-    str_md_translated += str_translated + '\n\n';
+    if (str.length < MAX_LENGTH && str_temp.length + str.length < MAX_LENGTH) {
+      str_temp += str + '\n\n';
+      continue;
+    }
+    const str_translated = await translate(str_temp);
+    str_temp = '';
 
+    str_md_translated += str_translated + '\n\n';
     console.log('\n')
   }
 
