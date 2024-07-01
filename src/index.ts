@@ -37,6 +37,7 @@ async function translate(str_md: string) {
 
 
   console.log(str_md);
+  console.log('-----------------------------------');
   console.log(response);
 
   return response;
@@ -60,14 +61,25 @@ async function main() {
   const len = arr_str_md.length;
   let str_temp = '';
   const MAX_LENGTH = 1024;
+  let count_scope_token = 0;
   for (let i = 0; i < len; i++) {
-    console.log(`============== [${i} / ${len}] ==============`)
-
     const str = arr_str_md[i];
+    // 快速扫描 str 中有多少个 ``` 符号
+    const count = (str.match(/```/g) || []).length;
+    count_scope_token += count;
+    // 如果是代码块，直接输出
+    if (count_scope_token % 2 === 1) {
+      str_temp += (str + '\n\n');
+      continue;
+    }else{
+      count_scope_token = 0;
+    }
+
     if (str.length < MAX_LENGTH) {
-      str_temp += str + '\n\n';
+      str_temp += (str + '\n\n');
       continue;
     }
+    console.log(`============== [${i} / ${len}] ==============`)
     const str_translated = await translate(str_temp);
     str_temp = '';
 
