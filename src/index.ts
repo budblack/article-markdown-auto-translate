@@ -1,4 +1,4 @@
-import { getInput } from '@actions/core';
+import { debug, getInput } from '@actions/core';
 import { context } from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 import { access, constants, ensureDir, ensureFile, readFile, unlink, writeFile } from 'fs-extra'
@@ -8,12 +8,34 @@ import { parseHTML } from 'linkedom';
 import OpenAI from 'openai';
 import { join } from 'path';
 import { assert } from 'console';
+import { Octokit } from '@octokit/rest';
 
 const map_str_prompts: any = {
   "zh-cn": "我有段 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局，请直接输出，不要在作询问。\n",
   "ja-jp": "私はmdファイルを持っています。日本語に翻訳してください。翻訳は元のファイルのMarkdownのレイアウトを厳密に保持する必要があります。直接出力してください、質問しないでください。\n",
   "es-es": "Tengo un archivo md, por favor tradúzcalo al español. La traducción debe mantener estrictamente el formato y la disposición del archivo original en markdown. Por favor, simplemente muéstrelo sin hacer preguntas.\n",
   "pt-br": "Eu tenho um arquivo md, por favor, traduza-o para o português. A tradução deve manter rigorosamente a formatação e layout markdown do arquivo original. Por favor, forneça a tradução diretamente sem fazer perguntas."
+}
+
+export async function addComment(body: string) {
+  const githubToken = getInput('githubToken');
+
+  if (!githubToken) throw new Error('GitHub token was not found');
+
+  const octokit = new Octokit({ auth: githubToken });
+  const { issue, repository } = context.payload;
+
+  if (issue && repository)
+    await octokit.issues.createComment({
+      owner: repository.owner.login,
+      repo: repository.name,
+      body,
+      issue_number: issue.number
+    });
+
+  debug(`issue: ${issue}`);
+  debug(`repository: ${repository}`);
+  debug(`comment: ${body}`);
 }
 
 function getRouteAddr(markdown: string) {
@@ -128,6 +150,14 @@ async function main() {
   await ensureFile(output_mdfile_path);
   await unlink(output_mdfile_path);
   await writeFile(output_mdfile_path, str_md_translated);
+
+  const { repo, ref } = context;
+  const successMessage = `
+- Auto translated Markdown file: [click to edit](https://github.com/${repo.owner}/${repo.repo
+    }/edit/${join(ref.replace(/^refs\/heads\//, ''), output_mdfile_path)})`;
+
+  await addComment(successMessage.trim());
+  console.log('Done');
 }
 
 main()
