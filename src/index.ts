@@ -57,7 +57,8 @@ async function main() {
   console.log('input_mdfile_dir:', input_mdfile_dir);
 
   // [Auto][zh-cn]（此处替换为翻译的中文标题）
-  const target_language = str_issue_title.match(/\[Auto\]\[(\w{5})\]/)?.[0] || '';
+  const target_language = str_issue_title.match(/\[Auto\]\[(\w+)\]/)?.[0] || '';
+  console.log('target_language:', target_language);
 
   const str_prompt = map_str_prompts[target_language];
   console.log('str_prompt:', str_prompt);
