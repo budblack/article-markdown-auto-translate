@@ -28,9 +28,6 @@ function getRouteAddr(markdown: string) {
 }
 
 async function translate(str_md: string, str_prompt: string) {
-
-
-
   const OPENAI_API_KEY = getInput('openaiApiKey');
 
   const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
@@ -51,23 +48,29 @@ async function translate(str_md: string, str_prompt: string) {
 }
 
 async function main() {
-  const newsLink = getInput('newsLink'),
-    ignoreSelector = getInput('ignoreSelector'),
+  const str_issue_title = getInput('issueTitle'),
+    str_news_link = getInput('newsLink'),
     input_mdfile_dir = getInput('markDownFilePath') || './';
 
-  // 从 issue 中获取 title
-  const str_issue_title = context.payload.issue?.title || '';
+  console.log('str_issue_title:', str_issue_title);
+  console.log('str_news_link:', str_news_link);
+  console.log('input_mdfile_dir:', input_mdfile_dir);
+
   // [Auto][zh-cn]（此处替换为翻译的中文标题）
   const target_language = str_issue_title.match(/\[Auto\]\[(\w{5})\]/)?.[0] || '';
 
   const str_prompt = map_str_prompts[target_language];
-  assert(str_prompt, 'targetLanguage is not supported!');
+  console.log('str_prompt:', str_prompt);
+  if (!str_prompt) {
+    throw new Error('Unsupported language');
+  }
 
   // markDownFilePath = './articles/raw/';
   // 根据语言生成不同的目标文件夹
   const output_mdfile_dir = join(input_mdfile_dir, '..', target_language);
+  console.log('output_mdfile_dir:', output_mdfile_dir);
 
-  const path = getRouteAddr(newsLink);
+  const path = getRouteAddr(str_news_link);
   const input_mdfile_path = join(
     input_mdfile_dir,
     path.split('/').filter(Boolean).at(-1) + '.md'
