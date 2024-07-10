@@ -94,21 +94,27 @@ async function main() {
   for (let i = 0; i < len; i++) {
     const not_last = i < len - 1;
     const str = arr_str_md[i];
+
+    let flag_pased = false;
+    if (str_temp.length < MAX_LENGTH) {
+      // 如果长度不够，继续拼接
+      str_temp += (str + '\n\n');
+      flag_pased = true;
+      if (not_last) continue;
+    }
+
     // 快速扫描 str 中有多少个 ``` 符号
     const count = (str.match(/```/g) || []).length;
     count_scope_token += count;
-    // 如果是代码块，直接输出
-    if (count_scope_token % 2 === 1 && not_last) {
+    if (count_scope_token % 2 === 1 && !flag_pased) {
+      // 如果是代码块，且没有被拼接过，继续拼接
       str_temp += (str + '\n\n');
-      continue;
+      flag_pased = true;
+      if (not_last) continue;
     } else {
       count_scope_token = 0;
     }
 
-    if (str_temp.length < MAX_LENGTH  && not_last) {
-      str_temp += (str + '\n\n');
-      continue;
-    }
     console.log(`============== [${i} / ${len}] ==============`)
     const str_translated = await translate(str_temp, str_prompt);
     str_temp = '';
