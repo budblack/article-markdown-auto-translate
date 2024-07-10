@@ -13,6 +13,7 @@ const map_str_prompts: any = {
   "zh-cn": "我有段 md 文件，请翻译为中文。翻译需要严格保留源文件 markdown 排版布局，请直接输出，不要在作询问。\n",
   "ja-jp": "私はmdファイルを持っています。日本語に翻訳してください。翻訳は元のファイルのMarkdownのレイアウトを厳密に保持する必要があります。直接出力してください、質問しないでください。\n",
   "es-es": "Tengo un archivo md, por favor tradúzcalo al español. La traducción debe mantener estrictamente el formato y la disposición del archivo original en markdown. Por favor, simplemente muéstrelo sin hacer preguntas.\n",
+  "pt-br": "Eu tenho um arquivo md, por favor, traduza-o para o português. A tradução deve manter rigorosamente a formatação e layout markdown do arquivo original. Por favor, forneça a tradução diretamente sem fazer perguntas."
 }
 
 function getRouteAddr(markdown: string) {
