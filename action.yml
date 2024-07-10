@@ -2,6 +2,9 @@ name: 'article-markdown-auto-translate'
 description: "Automatically translate markdown files with google translater."
 author: 'budblack'
 inputs:
+  issueTitle:
+    description: 'A string in a specific format that contains the title of the issue.'
+    required: true
   newsLink:
     description: 'A string in a specific format that contains a link to a article.'
     required: true
