@@ -92,20 +92,20 @@ async function main() {
   const MAX_LENGTH = 1024 * 5;
   let count_scope_token = 0;
   for (let i = 0; i < len; i++) {
+    const not_last = i < len - 1;
     const str = arr_str_md[i];
     // 快速扫描 str 中有多少个 ``` 符号
     const count = (str.match(/```/g) || []).length;
     count_scope_token += count;
-
     // 如果是代码块，直接输出
-    if (count_scope_token % 2 === 1) {
+    if (count_scope_token % 2 === 1 && not_last) {
       str_temp += (str + '\n\n');
       continue;
     } else {
       count_scope_token = 0;
     }
 
-    if (str_temp.length < MAX_LENGTH  && i !== len - 1) {
+    if (str_temp.length < MAX_LENGTH  && not_last) {
       str_temp += (str + '\n\n');
       continue;
     }
