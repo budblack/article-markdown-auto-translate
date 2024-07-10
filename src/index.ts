@@ -105,7 +105,7 @@ async function main() {
       count_scope_token = 0;
     }
 
-    if (str_temp.length < MAX_LENGTH) {
+    if (str_temp.length < MAX_LENGTH  && i !== len - 1) {
       str_temp += (str + '\n\n');
       continue;
     }
