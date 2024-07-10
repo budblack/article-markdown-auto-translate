@@ -88,7 +88,7 @@ async function main() {
   let str_md_translated = '';
   const len = arr_str_md.length;
   let str_temp = '';
-  const MAX_LENGTH = 1024;
+  const MAX_LENGTH = 1024 * 5;
   let count_scope_token = 0;
   for (let i = 0; i < len; i++) {
     const str = arr_str_md[i];
