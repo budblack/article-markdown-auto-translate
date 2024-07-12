@@ -71,17 +71,12 @@ async function translate(str_md: string, str_prompt: string) {
   return response;
 }
 
-async function main() {
-  const str_issue_title = getInput('issueTitle'),
-    str_news_link = getInput('newsLink'),
-    input_mdfile_dir = getInput('markDownFilePath') || './';
 
-  console.log('str_issue_title:', str_issue_title);
+async function process_one_article(str_news_link: string, input_mdfile_dir: string, output_mdfile_dir: string, target_language: string) {
+
   console.log('str_news_link:', str_news_link);
   console.log('input_mdfile_dir:', input_mdfile_dir);
 
-  // [Auto][zh-cn]（此处替换为翻译的中文标题）
-  const target_language = str_issue_title.match(/\[Auto\]\[(.+)\]/)?.[1] || '';
   console.log('target_language:', target_language);
 
   const str_prompt = map_str_prompts[target_language];
@@ -89,11 +84,6 @@ async function main() {
   if (!str_prompt) {
     throw new Error('Unsupported language');
   }
-
-  // markDownFilePath = './articles/raw/';
-  // 根据语言生成不同的目标文件夹
-  const output_mdfile_dir = join(input_mdfile_dir, '..', target_language);
-  console.log('output_mdfile_dir:', output_mdfile_dir);
 
   const path = getRouteAddr(str_news_link);
   const input_mdfile_path = join(
@@ -157,7 +147,29 @@ async function main() {
     }/edit/${join(ref.replace(/^refs\/heads\//, ''), output_mdfile_path)})`;
 
   await addComment(successMessage.trim());
-  console.log('Done');
+}
+
+async function main() {
+  const str_issue_title = getInput('issueTitle'),
+    potential_multi_line_news_link = getInput('newsLink'),
+    input_mdfile_dir = getInput('markDownFilePath') || './';
+
+  console.log('str_issue_title:', str_issue_title);
+  // [Auto][zh-cn]（此处替换为翻译的中文标题）
+  const target_language = str_issue_title.match(/\[Auto\]\[(.+)\]/)?.[1] || '';
+  console.log('target_language:', target_language);
+
+
+  const arr_str_news_link = potential_multi_line_news_link.split('\n');
+  for (let i = 0; i < arr_str_news_link.length; i++) {
+    const str_news_link = arr_str_news_link[i];
+
+    // 根据语言生成不同的目标文件夹
+    // markDownFilePath = './articles/raw/';
+    const output_mdfile_dir = join(input_mdfile_dir, '..', target_language);
+    console.log('output_mdfile_dir:', output_mdfile_dir);
+    await process_one_article(str_news_link, input_mdfile_dir, output_mdfile_dir, target_language);
+  }
 }
 
 main()
